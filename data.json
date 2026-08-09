@@ -1,0 +1,18 @@
+{
+  "status": "not_initialized",
+  "message": "Run the GitHub Actions workflow after adding secrets.",
+  "price_aud": null,
+  "intrinsic_value_aud": null,
+  "discount_to_value_pct": null,
+  "avg_fcf_per_share_aud": null,
+  "growth_rate": null,
+  "median_pe": 7.86,
+  "usd_to_aud": null,
+  "undervalued": false,
+  "updated_at": null,
+  "sources": {
+    "msn": "Not yet updated",
+    "yahoo": "Not yet updated",
+    "gurufocus": "Not yet updated"
+  }
+}

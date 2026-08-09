@@ -1,0 +1,12 @@
+{
+  "ticker": "FMG.AX",
+  "company": "Fortescue Ltd",
+  "valuation_currency": "AUD",
+  "required_return": 0.15,
+  "forecast_years": 10,
+  "fallback_median_pe": 7.86,
+  "alert_email": "robertmccormack3814@gmail.com",
+  "alert_rule": "market_price_below_intrinsic_value",
+  "growth_field": "earningsQuarterlyGrowth",
+  "fcf_years": 7
+}
