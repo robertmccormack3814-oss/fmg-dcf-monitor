@@ -21,6 +21,7 @@ HEADERS = {
 CF_URL = "https://stockanalysis.com/quote/asx/FMG/financials/cash-flow-statement/"
 BS_URL = "https://stockanalysis.com/quote/asx/FMG/financials/balance-sheet/"
 GF_URL = "https://www.gurufocus.com/term/pe-ratio/ASX%3AFMG"
+RATIOS_URL = "https://stockanalysis.com/quote/asx/FMG/financials/ratios/"
 
 def fetch_tables(url):
     r = requests.get(url, headers=HEADERS, timeout=30)
@@ -119,6 +120,55 @@ def yahoo_market_inputs():
         raise RuntimeError("Yahoo Finance did not return AUD/USD.")
     return float(price), float(growth), 1.0 / float(audusd)
 
+
+def current_sustainable_growth():
+    """
+    Sustainable growth rate = current ROE × current retention ratio.
+    Retention ratio = 1 - current payout ratio.
+
+    StockAnalysis/S&P Global updates FMG financial ratios after earnings releases.
+    The function reads the Current column each run, so ROE, payout and SGR can change
+    automatically over time without editing the code.
+    """
+    tables = fetch_tables(RATIOS_URL)
+    roe = None
+    payout = None
+
+    for df in tables:
+        if df.empty:
+            continue
+        first = df.columns[0]
+        labels = df[first].astype(str).str.strip().str.lower()
+
+        # Find a column representing the current/TTM period.
+        current_col = None
+        for col in df.columns[1:]:
+            if str(col).strip().lower() in {"current", "ttm"}:
+                current_col = col
+                break
+        if current_col is None and len(df.columns) > 1:
+            current_col = df.columns[1]
+
+        for label, val in zip(labels, df[current_col]):
+            text = str(val).replace(",", "").replace("%", "").strip()
+            try:
+                num = float(text) / 100.0
+            except ValueError:
+                continue
+            if label in {"return on equity (roe)", "return on equity"}:
+                roe = num
+            elif label == "payout ratio":
+                payout = num
+
+    if roe is None or payout is None:
+        raise RuntimeError("Could not obtain current ROE and payout ratio for sustainable growth.")
+
+    # A payout above 100% means a negative retention ratio. Preserve that economic
+    # signal rather than silently turning it into positive growth.
+    retention = 1.0 - payout
+    sgr = roe * retention
+    return roe, payout, retention, sgr
+
 def gurufocus_median_pe():
     r = requests.get(GF_URL, headers=HEADERS, timeout=30)
     r.raise_for_status()
@@ -181,7 +231,8 @@ def main():
     old = json.loads(DATA_FILE.read_text()) if DATA_FILE.exists() else {}
 
     avg_fcf_usd, history, refreshed = refresh_fundamental_history()
-    price, growth, usd_to_aud = yahoo_market_inputs()
+    price, _yahoo_growth_unused, usd_to_aud = yahoo_market_inputs()
+    roe, payout_ratio, retention_ratio, growth = current_sustainable_growth()
 
     try:
         pe = gurufocus_median_pe()
@@ -204,6 +255,10 @@ def main():
         "avg_fcf_per_share_usd": avg_fcf_usd,
         "avg_fcf_per_share_aud": avg_fcf_aud,
         "growth_rate": growth,
+        "sustainable_growth_rate": growth,
+        "roe": roe,
+        "payout_ratio": payout_ratio,
+        "retention_ratio": retention_ratio,
         "required_return": CONFIG["required_return"],
         "forecast_years": CONFIG["forecast_years"],
         "median_pe": pe,
@@ -216,7 +271,8 @@ def main():
                 f"7-year rolling history; {refreshed} recent annual periods "
                 "refreshed from StockAnalysis/S&P Global tables"
             ),
-            "yahoo": "Live Yahoo Finance price, earnings growth and AUD/USD",
+            "yahoo": "Live Yahoo Finance price and AUD/USD",
+            "growth": "Current ROE and payout ratio from StockAnalysis/S&P Global; SGR = ROE × (1 − payout ratio)",
             "gurufocus": gf_status
         }
     }
