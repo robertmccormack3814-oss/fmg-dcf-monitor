@@ -2,51 +2,42 @@
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FMG DCF Monitor</title>
 <style>
-body{font-family:Arial,sans-serif;background:#f4f5f7;color:#182230;margin:0;padding:22px}
-.wrap{max-width:950px;margin:auto}.card{background:#fff;border-radius:16px;padding:22px;margin-bottom:16px;box-shadow:0 3px 15px rgba(0,0,0,.07)}
+body{font-family:Arial,sans-serif;background:#f4f5f7;color:#182230;margin:0;padding:22px}.wrap{max-width:950px;margin:auto}
+.card{background:#fff;border-radius:16px;padding:22px;margin-bottom:16px;box-shadow:0 3px 15px rgba(0,0,0,.07)}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.metric{background:#f8fafc;border-radius:12px;padding:16px}
 .big{font-size:29px;font-weight:700}.status{padding:18px;border-radius:14px;font-size:21px;font-weight:700;text-align:center;margin-bottom:16px}
 .good{background:#d1fadf;color:#05603a}.bad{background:#fee4e2;color:#b42318}.neutral{background:#eef2f6;color:#344054}
 table{width:100%;border-collapse:collapse}th,td{padding:10px 6px;border-bottom:1px solid #eaecf0;text-align:left}.muted{color:#667085}
-</style></head>
-<body><div class="wrap">
-<div class="card"><h1>FMG DCF Monitor</h1><div class="muted">Fortescue Ltd • ASX: FMG • all valuation figures in AUD</div></div>
-<div id="status" class="status neutral">Loading latest valuation…</div>
+</style></head><body><div class="wrap">
+<div class="card"><h1>FMG DCF Monitor</h1><div class="muted">Fortescue Ltd • ASX: FMG • AUD valuation</div></div>
+<div id="status" class="status neutral">Loading…</div>
 <div class="card"><div class="grid">
 <div class="metric"><div class="muted">FMG price</div><div class="big" id="price">—</div></div>
 <div class="metric"><div class="muted">Intrinsic value</div><div class="big" id="value">—</div></div>
 <div class="metric"><div class="muted">Discount / premium</div><div class="big" id="discount">—</div></div>
 <div class="metric"><div class="muted">7Y avg FCF/share</div><div class="big" id="fcf">—</div></div>
 </div></div>
-<div class="card"><h2>Current model inputs</h2><table>
+<div class="card"><h2>Inputs</h2><table>
 <tr><th>Yahoo earnings growth (YoY)</th><td id="growth">—</td></tr>
-<tr><th>Required return</th><td>15.00%</td></tr>
-<tr><th>Forecast period</th><td>10 years</td></tr>
+<tr><th>Required return</th><td>15%</td></tr>
+<tr><th>Forecast</th><td>10 years</td></tr>
 <tr><th>GuruFocus 10Y median P/E</th><td id="pe">—</td></tr>
 <tr><th>USD → AUD</th><td id="fx">—</td></tr>
-<tr><th>Alert trigger</th><td>Market price &lt; intrinsic value</td></tr>
 </table></div>
 <div class="card"><h2>7-year FCF/share history</h2><table>
-<thead><tr><th>Year</th><th>Total FCF</th><th>Shares outstanding</th><th>FCF/share</th></tr></thead>
-<tbody id="fcfHistory"></tbody></table></div>
-<div class="card"><h2>Data freshness</h2><div id="updated">—</div><div id="sources"></div></div>
-<div class="card"><h2>Method</h2>
-<p>For each of the latest seven completed financial years, the monitor calculates free cash flow per share as total free cash flow divided by that year's shares outstanding. It then averages those seven per-share values, converts the average from USD to AUD, grows it for 10 years using Yahoo Finance's current earnings growth rate, discounts each year's FCF at 15%, and adds a terminal value equal to year-10 FCF/share × the GuruFocus 10-year median P/E.</p>
-<p><strong>Email alert:</strong> sent only when FMG crosses from above intrinsic value to below intrinsic value.</p></div>
+<thead><tr><th>FY</th><th>FCF US$m</th><th>Shares m</th><th>FCF/share USD</th></tr></thead><tbody id="hist"></tbody></table></div>
+<div class="card"><h2>Update status</h2><div id="updated"></div><div id="sources"></div></div>
 </div>
 <script>
 const aud=n=>n==null?"—":"A$"+Number(n).toFixed(2);
 fetch("data.json?t="+Date.now()).then(r=>r.json()).then(d=>{
-document.getElementById("price").textContent=aud(d.price_aud);
-document.getElementById("value").textContent=aud(d.intrinsic_value_aud);
-document.getElementById("fcf").textContent=aud(d.avg_fcf_per_share_aud);
-document.getElementById("growth").textContent=(d.growth_rate*100).toFixed(2)+"%";
-document.getElementById("pe").textContent=Number(d.median_pe).toFixed(2)+"×";
-document.getElementById("fx").textContent="1 USD = A$"+Number(d.usd_to_aud).toFixed(4);
-document.getElementById("discount").textContent=(d.discount_to_value_pct>=0?"-":"+")+Math.abs(d.discount_to_value_pct).toFixed(1)+"%";
-document.getElementById("updated").textContent="Last successful update: "+d.updated_at;
-const s=document.getElementById("status"); s.className="status "+(d.undervalued?"good":"bad"); s.textContent=d.undervalued?"🟢 UNDERVALUED":"🔴 ABOVE INTRINSIC VALUE";
-document.getElementById("sources").innerHTML="<p><strong>Fundamentals:</strong> "+d.sources.fundamentals+"</p><p><strong>Yahoo:</strong> "+d.sources.yahoo+"</p><p><strong>GuruFocus:</strong> "+d.sources.gurufocus+"</p>";
-document.getElementById("fcfHistory").innerHTML=(d.fcf_history||[]).map(x=>`<tr><td>${x.year}</td><td>US$${Number(x.fcf_usd).toFixed(0)}</td><td>${Number(x.shares).toFixed(0)}</td><td>US$${Number(x.fcf_per_share_usd).toFixed(2)}</td></tr>`).join("");
+price.textContent=aud(d.price_aud);value.textContent=aud(d.intrinsic_value_aud);fcf.textContent=aud(d.avg_fcf_per_share_aud);
+growth.textContent=(d.growth_rate*100).toFixed(2)+"%";pe.textContent=Number(d.median_pe).toFixed(2)+"×";
+fx.textContent="1 USD = A$"+Number(d.usd_to_aud).toFixed(4);
+discount.textContent=(d.discount_to_value_pct>=0?"-":"+")+Math.abs(d.discount_to_value_pct).toFixed(1)+"%";
+status.className="status "+(d.undervalued?"good":"bad");status.textContent=d.undervalued?"🟢 UNDERVALUED":"🔴 ABOVE INTRINSIC VALUE";
+updated.textContent="Last update: "+d.updated_at;
+sources.innerHTML="<p>"+d.sources.fundamentals+"</p><p>"+d.sources.yahoo+"</p><p>"+d.sources.gurufocus+"</p>";
+hist.innerHTML=(d.fcf_history||[]).map(x=>`<tr><td>${x.year}</td><td>${x.fcf_usd_m.toFixed(0)}</td><td>${x.shares_m.toFixed(3)}</td><td>${x.fcf_per_share_usd.toFixed(2)}</td></tr>`).join("");
 });
 </script></body></html>
