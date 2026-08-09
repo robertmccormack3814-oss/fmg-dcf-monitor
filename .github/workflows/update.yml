@@ -1,36 +1,25 @@
 name: Update FMG DCF
-
 on:
   workflow_dispatch:
   schedule:
     - cron: "30 7 * * 1-5"
-
 permissions:
   contents: write
-
 jobs:
   update:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Refresh valuation and send crossing alert
+      - run: pip install -r requirements.txt
+      - name: Refresh valuation and alert
         env:
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
           SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
           MSN_FMG_FCF_URL: ${{ secrets.MSN_FMG_FCF_URL }}
         run: python update.py
-
       - name: Commit refreshed data
         run: |
           git config user.name "FMG DCF Bot"
