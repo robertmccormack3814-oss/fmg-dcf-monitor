@@ -1,19 +1,63 @@
 {
-  "status": "not_initialized",
-  "price_aud": null,
-  "intrinsic_value_aud": null,
-  "discount_to_value_pct": null,
-  "avg_fcf_per_share_usd": null,
-  "avg_fcf_per_share_aud": null,
-  "growth_rate": null,
+  "price_aud": 18.02,
+  "intrinsic_value_aud": 67.57467904067406,
+  "discount_to_value_pct": 73.33320667471682,
+  "avg_fcf_per_share_usd": 1.5642640765254487,
+  "avg_fcf_per_share_aud": 2.212338699119848,
+  "growth_rate": 0.232,
+  "required_return": 0.15,
+  "forecast_years": 10,
   "median_pe": 7.86,
-  "usd_to_aud": null,
-  "undervalued": false,
-  "updated_at": null,
-  "fcf_history": [],
+  "usd_to_aud": 1.4143000100302157,
+  "undervalued": true,
+  "updated_at": "2026-08-09T04:05:20.061565+00:00",
+  "fcf_history": [
+    {
+      "year": "2019",
+      "fcf_usd_m": 3330.0,
+      "shares_m": 3077.454237,
+      "fcf_per_share_usd": 1.0820632066477744
+    },
+    {
+      "year": "2020",
+      "fcf_usd_m": 4477.0,
+      "shares_m": 3077.714354,
+      "fcf_per_share_usd": 1.454650914624808
+    },
+    {
+      "year": "2021",
+      "fcf_usd_m": 9212.0,
+      "shares_m": 3077.0,
+      "fcf_per_share_usd": 2.993825154371141
+    },
+    {
+      "year": "2022",
+      "fcf_usd_m": 3843.0,
+      "shares_m": 3077.0,
+      "fcf_per_share_usd": 1.24894377640559
+    },
+    {
+      "year": "2023",
+      "fcf_usd_m": 4531.0,
+      "shares_m": 3076.0,
+      "fcf_per_share_usd": 1.4730169050715214
+    },
+    {
+      "year": "2024",
+      "fcf_usd_m": 5085.0,
+      "shares_m": 3076.0,
+      "fcf_per_share_usd": 1.6531209362808843
+    },
+    {
+      "year": "2025",
+      "fcf_usd_m": 3211.0,
+      "shares_m": 3075.0,
+      "fcf_per_share_usd": 1.0442276422764227
+    }
+  ],
   "sources": {
-    "fundamentals": "Not yet updated",
-    "yahoo": "Not yet updated",
-    "gurufocus": "Not yet updated"
+    "fundamentals": "7-year rolling history; 5 recent annual periods refreshed from StockAnalysis/S&P Global tables",
+    "yahoo": "Live Yahoo Finance price, earnings growth and AUD/USD",
+    "gurufocus": "Fallback 7.86x; live fetch failed: 403 Client Error: Forbidden for url: https://www.gurufocus.com/term/pe-ratio/ASX%3AFMG"
   }
 }
