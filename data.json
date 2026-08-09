@@ -3,6 +3,7 @@
   "price_aud": null,
   "intrinsic_value_aud": null,
   "discount_to_value_pct": null,
+  "avg_fcf_per_share_usd": null,
   "avg_fcf_per_share_aud": null,
   "growth_rate": null,
   "median_pe": 7.86,
