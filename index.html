@@ -18,7 +18,10 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 6px;border-bottom:1
 <div class="metric"><div class="muted">7Y avg FCF/share</div><div class="big" id="fcf">—</div></div>
 </div></div>
 <div class="card"><h2>Inputs</h2><table>
-<tr><th>Yahoo earnings growth (YoY)</th><td id="growth">—</td></tr>
+<tr><th>Sustainable growth rate</th><td id="growth">—</td></tr>
+<tr><th>Current ROE</th><td id="roe">—</td></tr>
+<tr><th>Current payout ratio</th><td id="payout">—</td></tr>
+<tr><th>Current retention ratio</th><td id="retention">—</td></tr>
 <tr><th>Required return</th><td>15%</td></tr>
 <tr><th>Forecast</th><td>10 years</td></tr>
 <tr><th>GuruFocus 10Y median P/E</th><td id="pe">—</td></tr>
@@ -32,12 +35,12 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 6px;border-bottom:1
 const aud=n=>n==null?"—":"A$"+Number(n).toFixed(2);
 fetch("data.json?t="+Date.now()).then(r=>r.json()).then(d=>{
 price.textContent=aud(d.price_aud);value.textContent=aud(d.intrinsic_value_aud);fcf.textContent=aud(d.avg_fcf_per_share_aud);
-growth.textContent=(d.growth_rate*100).toFixed(2)+"%";pe.textContent=Number(d.median_pe).toFixed(2)+"×";
+growth.textContent=(d.sustainable_growth_rate*100).toFixed(2)+"%";roe.textContent=(d.roe*100).toFixed(2)+"%";payout.textContent=(d.payout_ratio*100).toFixed(2)+"%";retention.textContent=(d.retention_ratio*100).toFixed(2)+"%";pe.textContent=Number(d.median_pe).toFixed(2)+"×";
 fx.textContent="1 USD = A$"+Number(d.usd_to_aud).toFixed(4);
 discount.textContent=(d.discount_to_value_pct>=0?"-":"+")+Math.abs(d.discount_to_value_pct).toFixed(1)+"%";
 status.className="status "+(d.undervalued?"good":"bad");status.textContent=d.undervalued?"🟢 UNDERVALUED":"🔴 ABOVE INTRINSIC VALUE";
 updated.textContent="Last update: "+d.updated_at;
-sources.innerHTML="<p>"+d.sources.fundamentals+"</p><p>"+d.sources.yahoo+"</p><p>"+d.sources.gurufocus+"</p>";
+sources.innerHTML="<p>"+d.sources.fundamentals+"</p><p>"+d.sources.growth+"</p><p>"+d.sources.yahoo+"</p><p>"+d.sources.gurufocus+"</p>";
 hist.innerHTML=(d.fcf_history||[]).map(x=>`<tr><td>${x.year}</td><td>${x.fcf_usd_m.toFixed(0)}</td><td>${x.shares_m.toFixed(3)}</td><td>${x.fcf_per_share_usd.toFixed(2)}</td></tr>`).join("");
 });
 </script></body></html>
