@@ -1,9 +1,9 @@
 {
-  "price_aud": 17.64,
-  "intrinsic_value_aud": 24.744045723885456,
-  "discount_to_value_pct": 28.71012203565366,
+  "price_aud": 17.75,
+  "intrinsic_value_aud": 24.581175908735137,
+  "discount_to_value_pct": 27.790273069514214,
   "avg_fcf_per_share_usd": 1.5642640765254487,
-  "avg_fcf_per_share_aud": 2.210148629339332,
+  "avg_fcf_per_share_aud": 2.195601028565714,
   "growth_rate": 0.07728315,
   "sustainable_growth_rate": 0.07728315,
   "roe": 0.1869,
@@ -12,9 +12,9 @@
   "required_return": 0.15,
   "forecast_years": 10,
   "median_pe": 7.86,
-  "usd_to_aud": 1.41289994605548,
+  "usd_to_aud": 1.4035999813040483,
   "undervalued": true,
-  "updated_at": "2026-08-14T10:42:23.290439+00:00",
+  "updated_at": "2026-08-17T09:25:19.843561+00:00",
   "fcf_history": [
     {
       "year": "2019",
